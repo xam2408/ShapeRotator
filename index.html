@@ -5,29 +5,38 @@
 </head>
 
 <body style="background: black; color: white;">
-    <svg width="600" height="600" style="border: 1px solid gray">
-        <circle id="p0" r="4" fill="lime" /> <circle id="p1" r="4" fill="lime" />   
-        <circle id="p2" r="4" fill="lime" /> <circle id="p3" r="4" fill="lime" /> 
-        <circle id="p4" r="4" fill="lime" /> <circle id="p5" r="4" fill="lime" />   
-        <circle id="p6" r="4" fill="lime" /> <circle id="p7" r="4" fill="lime" />
-
-        <line id="l0" stroke="lime" stroke-width="2" /> <line id="l1" stroke="lime" stroke-width="2" />
-        <line id="l2" stroke="lime" stroke-width="2" /> <line id="l3" stroke="lime" stroke-width="2" />
-        <line id="l4" stroke="lime" stroke-width="2" /> <line id="l5" stroke="lime" stroke-width="2" />
-        <line id="l6" stroke="lime" stroke-width="2" /> <line id="l7" stroke="lime" stroke-width="2" />
-        <line id="l8" stroke="lime" stroke-width="2" /> <line id="l9" stroke="lime" stroke-width="2" />
-        <line id="l10" stroke="lime" stroke-width="2" /> <line id="l11" stroke="lime" stroke-width="2" />
-
-    </svg>
+    <svg id="stage" width="600" height="600" style="border: 1px solid gray"></svg>
 
     <script>
 
+	const svg = document.getElementById('stage')
         const edges = [
             [0, 1], [1, 2], [2, 3], [3, 0],
             [4, 5], [5, 6], [6, 7], [7, 4],
             [0, 4], [1, 5], [2, 6], [3, 7]
 
         ];
+
+	function createShape(pointsCount, edgesDef) {
+ 	   edgesDef.forEach((pair, i) => {
+  	      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  	      line.id = "l" + i;           
+  	      line.setAttribute("stroke", "lime");
+  	      line.setAttribute("stroke-width", "2");
+  	      svg.appendChild(line);          
+ 	   });
+
+	    for (let i = 0; i < pointsCount; i++) {
+ 	       const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+ 	       circle.id = "p" + i;            
+ 	       circle.setAttribute("r", "5");
+ 	       circle.setAttribute("fill", "lime");
+ 	       svg.appendChild(circle);        
+	    }
+	}
+
+
+	createShape(8, edges);
 
         async function updateAnimation(){
             try{
@@ -63,5 +72,3 @@
     </script>
 </body>
 </html>
-
-
