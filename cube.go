@@ -72,6 +72,17 @@ func rotateXY(p Point3D, angle float64) Point3D{
      
 }
 
+func rotateXZ(p Point3D, angle float64) Point3D{
+    nx := p.X*math.Cos(angle) - p.Z*math.Sin(angle) 
+    nz := p.X*math.Sin(angle) + p.Z*math.Cos(angle) 
+    return Point3D{
+        X: nx,
+        Y: p.Y,
+        Z: nz,
+    }    
+     
+}
+
 func proj4Dto3D(p Point4D) Point3D{
     distance := 2.5
     wFactor := 1.0 / (distance - p.W)
@@ -101,17 +112,21 @@ func proj(p Point3D) Screen{
 }
 
 
-func prepareTessaract(angle4D, angle3D float64) []Screen{
+func prepareTessaract(angle4D, angle3D_Z, angle3D_Y float64) []Screen{
     rawPoints := getTessaract()
     var result []Screen
 
     for _, p4 := range rawPoints{
-        pRotated4D := rotateZW(p4, angle4D)
-
-        p3 := proj4Dto3D(pRotated4D)
-        pRotated3D := rotateXY(p3, angle3D)
-
-        p2 := proj(pRotated3D)
+        p := rotateZW(p4, angle4D)
+   
+        p3 := proj4Dto3D(p)
+        p3 = rotateXY(p3, math.Pi/4)
+        p3 = rotateXZ(p3, math.Pi/4)
+        
+        p3 = rotateXZ(p3, angle3D_Y)
+        
+        p2 := proj(p3)
+    
         result = append(result, p2)
     }
 
@@ -137,10 +152,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request){
 
 func dataHandler(w http.ResponseWriter, r *http.Request){
     t := time.Now().UnixMilli()
-    angle4D := float64(t)/1500.0
-    angle3D := float64(t)/3000.0
+    angle4D := float64(t)/4000.0
+    angleZ := float64(t)/3000.0
+    angleY := float64(t)/2000.0
 
-    readyFrame := prepareTessaract(angle4D, angle3D)
+    readyFrame := prepareTessaract(angle4D, angleZ, angleY)
     
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(readyFrame)
