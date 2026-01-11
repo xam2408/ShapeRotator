@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+</head>
+
+<body style="background: black; color: white;">
+    <svg width="600" height="600" style="border: 1px solid gray">
+        <circle id="p0" r="4" fill="lime" /> <circle id="p1" r="4" fill="lime" />   
+        <circle id="p2" r="4" fill="lime" /> <circle id="p3" r="4" fill="lime" /> 
+        <circle id="p4" r="4" fill="lime" /> <circle id="p5" r="4" fill="lime" />   
+        <circle id="p6" r="4" fill="lime" /> <circle id="p7" r="4" fill="lime" />
+
+        <line id="l0" stroke="lime" stroke-width="2" /> <line id="l1" stroke="lime" stroke-width="2" />
+        <line id="l2" stroke="lime" stroke-width="2" /> <line id="l3" stroke="lime" stroke-width="2" />
+        <line id="l4" stroke="lime" stroke-width="2" /> <line id="l5" stroke="lime" stroke-width="2" />
+        <line id="l6" stroke="lime" stroke-width="2" /> <line id="l7" stroke="lime" stroke-width="2" />
+
+    </svg>
+
+    <script>
+
+        const edges = [
+            [0, 1], [1, 2], [2, 3], [3, 0],
+            [4, 5], [5, 6], [6, 7], [7, 4],
+            [0, 4], [1, 5], [2, 6], [3, 7]
+
+        ];
+
+        async function updateAnimation(){
+            try{
+                const response = await fetch('data');
+                const points = await response.json();
+                points.forEach((point, index) => {
+                    const circle = document.getElementById('p' + index);
+                    if (circle){
+                        circle.setAttribute('cx', point.x);
+                        circle.setAttribute('cy', point.y);
+                    }
+                });
+                edges.forEach((pair, i) => {
+                    const pA = points[pair[0]];
+                    const pB = points[pair[1]];
+                    const line = document.getElementById('l' + i);
+                    if (line){
+                        line.setAttribute('x1', pA.x);
+                        line.setAttribute('y1', pA.y);
+                        line.setAttribute('x2', pB.x);
+                        line.setAttribute('y2', pB.y);
+
+                    }
+                });
+            }
+            catch (error){
+                console.error("Data ERROR: ", error);
+            }
+            requestAnimationFrame(updateAnimation);
+        }
+        updateAnimation();
+
+    </script>
+</body>
+</html>
+
+
