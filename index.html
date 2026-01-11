@@ -5,10 +5,16 @@
 </head>
 
 <body style="background: black; color: white;">
+    <div style="margin: 15px;">
+        <button id="toggleBtn" style="padding 10px 20px; font-size: 16px; cursor: pointer; nackground: #333; color: lime; broder: 1px solid lime">
+            STOP
+        </button>
+    </div>
     <svg id="stage" width="600" height="600" style="border: 1px solid gray"></svg>
-
+    
     <script>
 
+    const btn = document.getElementById('toggleBtn')
 	const svg = document.getElementById('stage')
         const edges = [
             [0, 1], [1, 2], [2, 3], [3, 0],
@@ -22,6 +28,23 @@
             [8, 0], [9, 1], [10, 2], [11, 3],
             [12, 4], [13, 5], [14, 6], [15, 7]
         ];
+    
+    let isRunning = true;
+    let animationTime = 0;
+
+    btn.addEventListener('click', () => {
+        isRunning = !isRunning;
+
+        if (isRunning){
+            btn.innerText = "STOP";
+            btn.style.color = "red";
+            btn.style.borderColor = "red";
+        } else {
+            btn.innerText = "START";
+            btn.style.color = "lime";
+            btn.style.borderColor = "lime"; 
+        }
+    });
 
 	function createShape(pointsCount, edgesDef) {
  	   edgesDef.forEach((pair, i) => {
@@ -45,8 +68,11 @@
 	createShape(16, edges);
 
         async function updateAnimation(){
+            if (isRunning) {
+                animationTime += 20;
+            }
             try{
-                const response = await fetch('data');
+                const response = await fetch('data?t=' + animationTime);
                 const points = await response.json();
                 points.forEach((point, index) => {
                     const circle = document.getElementById('p' + index);

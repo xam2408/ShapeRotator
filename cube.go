@@ -1,6 +1,7 @@
 package main
 
 import (
+    "strconv"
     "encoding/json"
     "math"
     "time"
@@ -151,10 +152,20 @@ func indexHandler(w http.ResponseWriter, r *http.Request){
 }
 
 func dataHandler(w http.ResponseWriter, r *http.Request){
-    t := time.Now().UnixMilli()
-    angle4D := float64(t)/4000.0
+    tStr := r.URL.Query().Get("t")
+    var t float64
+    if tStr != "" {
+        val, err := strconv.ParseFloat(tStr, 64)
+        if err == nil{
+            t = val
+        }
+    } else{
+            t = float64(time.Now().UnixMilli())
+    }
+
+    angle4D := float64(t)/5000.0
     angleZ := float64(t)/3000.0
-    angleY := float64(t)/2000.0
+    angleY := float64(t)/4000.0
 
     readyFrame := prepareTessaract(angle4D, angleZ, angleY)
     
